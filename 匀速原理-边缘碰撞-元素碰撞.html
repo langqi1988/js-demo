@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			//解决div碰到边缘会闪烁一下滚动条问题
+			body {
+				overflow: hidden;
+			}
+
+			div {
+				width: 100px;
+				height: 100px;
+				background: black;
+				position: absolute;
+				left: 0;
+				right: 0;
+			}
+
+			div:nth-of-type(2) {
+				left: 200px;
+				top: 200px;
+
+			}
+		</style>
+	</head>
+	<body>
+		<div></div>
+		<div></div>
+	</body>
+	<script type="text/javascript">
+		//div移动的速度
+		// var speedX = 5;
+		// var speedY = 5;
+		//获取div对象
+		var div1 = document.querySelector('div');
+		var div2 = document.querySelector('div:nth-of-type(2)')
+		div1.speedX = 5;
+		div1.speedY = 3;
+		div2.speedX = 5;
+		div2.speedY = 3;
+		//创建移动函数
+		function move(el) {
+			//获取当前的left值 以为值带PX 所以用parseInt去掉px
+			var currentLeft = parseInt(window.getComputedStyle(el).left);
+			//获取当前的top值 以为值带PX 所以用parseInt去掉px
+			var currentTop = parseInt(window.getComputedStyle(el).top);
+			//每次调用move函数都会执行check_border_collision函数来检测是否碰到边缘
+			check_border_collision(el);
+			//交换speed用的临时变量
+			var tempX, tempY;
+			//每次调用move函数执行check_block_collision()检测是否碰撞
+			if (check_block_collision(div1, div2)) {
+				//如果碰撞交换速度
+				tempX = div1.speedX;
+				tempY = div1.speedY;
+
+				div1.speedX = div2.speedX;
+				div1.speedY = div2.speedY;
+
+				div2.speedX = tempX;
+				div2.speedY = tempY;
+			}
+			//每次调用move这个函数让el移动speedx长度
+			var left = currentLeft + el.speedX;
+			var top = currentTop + el.speedY;
+			el.style.left = left + 'px';
+			el.style.top = top + 'px';
+		}
+		//检测边缘碰撞函数
+		function check_border_collision(el) {
+			//获取必要数据
+			var style = window.getComputedStyle(el);
+			//元素的left top
+			var left = parseInt(style.left);
+			var top = parseInt(style.top);
+			//元素的width heigth
+			var w = parseInt(style.width);
+			var h = parseInt(style.height);
+			//判断当前位置 
+			//left<=0说明碰到屏幕左边缘 修正位置 改变speedx的方向
+			if (left < 0) {
+				left = 0;
+				el.speedX *= -1;
+			}
+			//元素到达右边缘 修正位置 改变移动方向
+			if (left > window.innerWidth - w) {
+				left = window.innerWidth - w;
+				el.speedX *= -1;
+			}
+			//元素到达顶部 修正位置 改变移动方向
+			if (top < 0) {
+				top = 0;
+				el.speedY *= -1;
+			}
+			////元素到达底部 修正位置 改变移动方向
+			if (top > window.innerHeight - h) {
+				top = window.innerHeight - h;
+				el.speedY *= -1;
+			}
+			//若碰到边缘 修正top left 如果触边 也不影响
+			el.style.top = top + 'px';
+			el.style.left = left + 'px';
+		}
+		//判断两个元素是否碰撞
+		function check_block_collision(block1, block2) {
+			var left1 = parseInt(window.getComputedStyle(block1).left);
+			var left2 = parseInt(window.getComputedStyle(block2).left);
+
+			var top1 = parseInt(window.getComputedStyle(block1).top);
+			var top2 = parseInt(window.getComputedStyle(block2).top);
+
+			var width1 = parseInt(window.getComputedStyle(block1).width);
+			var width2 = parseInt(window.getComputedStyle(block2).width);
+
+			var height1 = parseInt(window.getComputedStyle(block1).height);
+			var height2 = parseInt(window.getComputedStyle(block2).height);
+			//计算两个元素中心点
+			var center1 = {
+				x: left1 + width1 / 2,
+				y: top1 + height1 / 2,
+			}
+			var center2 = {
+				x: left2 + width2 / 2,
+				y: top2 + height2 / 2,
+			}
+			//计算两个元素水平和垂直的距离
+			var diffX = Math.abs(center1.x - center2.x);
+			var diffY = Math.abs(center1.y - center2.y);
+			//判断是否碰撞 返回true 或者false
+			if (diffX < (width1 + width2) / 2 && diffY < (height1 + height2) / 2) {
+				return true;
+			}
+			return false;
+		}
+		setInterval(function() {
+			move(div1);
+			move(div2);
+		}, 10)
+	</script>
+</html>
