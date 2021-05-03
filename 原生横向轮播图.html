@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+	</head>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		ul {
+			list-style: none;
+		}
+
+		.slider {
+			width: 520px;
+			height: 280px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.slider .list {
+			position: absolute;
+		}
+
+		.slider .list .item {
+			width: 520px;
+			height: 280px;
+			float: left;
+		}
+
+		.slider .list .item img {
+			width: 520px;
+			height: 280px;
+			display: block;
+		}
+
+		.slider .prev,
+		.slider .next {
+			position: absolute;
+			top: 150px;
+		}
+
+		.slider .next {
+			right: 0;
+		}
+
+		.slider .page {
+			width: 100%;
+			position: absolute;
+			bottom: 10px;
+		}
+
+		.slider .pagination {
+			width: 95px;
+			height: 20px;
+			margin: 0 auto;
+		}
+
+		.slider .pagination .bullet {
+			width: 20px;
+			height: 20px;
+			background: black;
+			margin-right: 5px;
+			float: left;
+			cursor: pointer;
+		}
+
+		.slider .pagination .bullet:last-child {
+			margin-right: 0;
+		}
+
+		.focus {
+			background-color: yellow !important;
+		}
+	</style>
+	<body>
+		<div class="slider">
+			<ul class="list">
+				<li class="item"><img src="./img/adimg1.jpg"></li>
+				<li class="item"><img src="./img/adimg2.jpg"></li>
+				<li class="item"><img src="./img/adimg3.jpg"></li>
+				<li class="item"><img src="./img/adimg4.jpg"></li>
+			</ul>
+			<button class="prev">prev</button>
+			<button class="next">next</button>
+			<div class="page">
+				<ul class="pagination">
+					<li class="bullet focus"></li>
+					<li class="bullet"></li>
+					<li class="bullet"></li>
+					<li class="bullet"></li>
+				</ul>
+			</div>
+		</div>
+
+	</body>
+	<script src="./animation.js"></script>
+	<script type="text/javascript">
+		(function() {
+			//定义变量
+			var currIndex;
+			var lis;
+			var liWidth;
+			var len;
+			var id;
+			init();
+			auto();
+			function init() {
+				//当前图片编号1 不是0 因为0是最后一个图片的复制品
+				currIndex = 1;
+				//获取第一个图片 并复制
+				var li_1 = document.querySelector('.slider .list .item:first-of-type')
+				var copy_1 = li_1.cloneNode(true);
+				//获取最后一个图片 并复制
+				var li_last = document.querySelector('.slider .list .item:last-of-type')
+				var copy_last = li_last.cloneNode(true);
+				//找到图片列表 将复制的第一图片插入最后 最后图片插入开头
+				var list = document.querySelector('.slider .list');
+				list.appendChild(copy_1);
+				list.insertBefore(copy_last, li_1);
+				//获取所有图片元素（新增后）
+				var lis = document.querySelectorAll('.list .item');
+				//获取一张图片的宽度
+				liWidth = lis[0].offsetWidth;
+				//获取图片个数
+				len = lis.length;
+				//算出图片总共长度 并复制给ul
+				list.style.width = liWidth * len + 'px';
+				//让当前ul显示第一张图片 非插入后的第一张（插入前的最后一张）
+				list.style.left = -liWidth + 'px';
+				//添加上一张 下一张点击事件
+				document.querySelector('.prev').onclick = function() {
+					slidePrev();
+				}
+				document.querySelector('.next').onclick = function() {
+					slideNext();
+				}
+				//获取所有子弹
+				var bullets = document.querySelectorAll('.slider .pagination .bullet');
+				//为每个子弹添加点击事件
+				for (var i = 0; i < bullets.length; i++) {
+					//将子弹序号添加为子弹元素的属性 为了记录子弹的序号
+					bullets[i].index = i;
+					bullets[i].onclick = function() {
+						//因为开头多一张图片 所以点击子弹时 子弹所对应的图片的index就是index+1
+						currIndex = this.index + 1;
+						//切换到子弹对应的图片
+						slideTo(currIndex);
+					}
+				}
+				//移入 移除 自动播放
+				document.querySelector('.slider').onmouseover = function(){
+					stop();
+				}
+				document.querySelector('.slider').onmouseout = function(){
+					auto();
+				}
+			}
+			//下一张图片
+			function slideNext() {
+				//当前图片index+1 （即将显示的图片index）
+				currIndex++;
+				//切换图片
+				slideTo(currIndex);
+			}
+			//上一张图片
+			function slidePrev() {
+				//当前图片index-1 （即将显示的图片index）
+				currIndex--;
+				//切换图片
+				slideTo(currIndex);
+			}
+			//图片切换函数
+			function slideTo(index) {
+				//获取UL元素
+				var list = document.querySelector('.slider .list');
+				//修正位置 如果index=len说明要切换到的新图片已经超过最后一张（实际上的第一张）
+				if (index === len) {
+					//那么让序号指向第二张
+					currIndex = index = 2;
+					//瞬间让图片切换到第一张
+					list.style.left = -liWidth + 'px';
+				}
+				//修正位置 如果index=-1 说明要切换到的新图片已经超过第一张（实际上的最后一张）
+				if (index === -1) {
+					//那么让序号指向第三张
+					currIndex = index = len - 3;
+					//瞬间切换到第四章
+					list.style.left = -(len - 2) * liWidth + 'px';
+				}
+				//让图片切换时 子弹样式改变
+				var focusIndex;
+				//获取子弹
+				var bullets = document.querySelectorAll('.pagination .bullet');
+				//index是当前图片序号 若为0 说明当前图片为第四张（原图片 插入前后图前）
+				if (index === 0) {
+					//第四张图片序号 对应子弹序号为 3 （子弹长度-1 最后一个子弹）
+					focusIndex = bullets.length - 1;
+					//如果当前图片序号为 len-1（图片长度-1） 说明显示的是第一张图片（原图片 插入前后图前）
+				} else if (index === len - 1) {
+					//第一张图片对应第一个子弹
+					focusIndex = 0;
+				} else {
+					//若当前显示图片 不是插入后新列表中的第一张或者最后一张 那么子弹对应的就是新图片列表长度-1（例如 图片index=1 是插入前第一张图片 index-1 是第一个子弹 focusindex0）
+					focusIndex = index - 1;
+				}
+				//找到当前有样式的子弹 去掉样式
+				document.querySelector('.focus').className = 'bullet';
+				//通过要切换到的图片对应的子弹序号 找到对应子弹 添加样式类
+				bullets[focusIndex].className = 'bullet focus';
+				//算出ul整体偏移量
+				var left = -index * liWidth;
+				//让ul偏移
+				animate(list, {
+					left: left
+				})
+			}
+			//自动轮播
+			function auto() {
+				clearInterval(id);
+				id = setInterval(function() {
+					slideNext();
+				}, 2000)
+			}
+			//停止轮播
+			function stop() {
+				clearInterval(id);
+			}
+		})()
+	</script>
+</html>
