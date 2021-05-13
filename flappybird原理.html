@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+		<style type="text/css">
+			div {
+				width: 600px;
+				height: 400px;
+				margin: 0 auto;
+				border: 1px red solid;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 画布特有标签canvas -->
+			<canvas id="canvas" width="600" height="400"></canvas>
+		</div>
+
+	</body>
+	<script src="js/随机数函数.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		//获取画布对象
+		var canvas = document.getElementById('canvas');
+		//getContext() 方法可返回一个对象，该对象提供了用于在画布上绘图的方法和属性。
+		context = canvas.getContext("2d");
+		//创建image对象
+		var img = new Image();
+		//添加img的图片路径
+		img.src = "img/图标.jpg";
+		//设置img在画布中的初始位置
+		var iconX = 100;
+		var iconY = 100;
+		//定时器 icon下落
+		var iconTimer = null;
+		//当img加载完成后 执行函数
+		img.onload = function() {
+			//判断 防止重复执行定时器
+			if (iconTimer == null) {
+				iconTimer = setInterval(function() {
+					//icon下落 每次1
+					iconY = iconY + 1;
+					//清空画布  0 0 坐标 600 400要清空的画布大小
+					context.clearRect(0, 0, 600, 400);
+					//此方法 让iconMove移动 并画在画布上
+					drawColumn();
+					//在画布上画icon
+					context.drawImage(img, iconX, iconY);
+				}, 20)
+			}
+		}
+		//每点击一下 icon向上蹦一下
+		document.onclick = function() {
+			iconY = iconY - 20;
+		}
+		//存iconMove的数组
+		var iconArry = [];
+		//定时器 iconMove
+		var iconMoveTimer = null;
+		
+		//此方法创建iconMove
+		function createIcon() {
+			//设置定时器一直创建iconMove 一秒创建一个
+			iconMoveTimer = setInterval(function() {
+				//每次创建一个对象
+				var iconMove = {};
+				//被创建的iconMove X值固定  Y值随机 范围100-200
+				iconMove.positionX = 300;
+				iconMove.positionY = randomNum(100, 200);
+				//通过时间戳来区分每一个iconMove
+				iconMove.id = new Date().getTime();
+				//为iconMove对象添加一个图片
+				iconMove.iconA = new Image();
+				iconMove.iconA.src = "img/移动图标.jpg";
+				//创建后家兔存放iconMove的数组
+				iconArry.push(iconMove);
+				// console.log(iconMove);
+			}, 1000)
+		}
+		//执行创建iconMove对象的函数 执行一次就行 有定时器会一直创建
+		createIcon();
+		
+		//算分数相关
+		var same = null;
+		var mark = 0;
+		
+		function drawColumn() {
+			//遍历存iconMove的数组
+			for (var i = 0; i < iconArry.length; i++) {
+				//每次遍历 让他们向左移动
+				iconArry[i].positionX = iconArry[i].positionX - 10;
+				//移动完毕 画在画布上
+				context.drawImage(iconArry[i].iconA, iconArry[i].positionX, iconArry[i].positionY)
+				
+				//如果iconMove从icon的右边移动到左边的过程 （范围） 
+				if (iconX + 50 >= iconArry[i].positionX && iconX - 100 <= iconArry[i].positionX) {
+					// console.log('经过了')
+					//防止分数一直加 通过id（时间戳）
+					if (iconArry[i].id !== same) {
+						iconArry[i].id = same;
+						mark++;
+						console.log(mark);
+						// document.getElementById("").innerHtml = "" 加分后 更新HTML页面上的数据
+					}
+					//判断碰撞
+					if (iconY +50 > iconArry[i].positionY && iconArry[i].positionY +100>iconY) {
+						console.log("碰到了")
+						//编写死亡代码
+						//停止一切定时器
+						clearInterval(iconTimer);
+						clearInterval(iconMoveTimer);
+						//下面可以弹出显示分数代码
+						//获取分数界面 将none改为block
+						//代码省略
+						//**************************
+						
+						//可以设置延时函数 过几秒后重新开始
+						setTimeout(function () {
+							//重新加载页面
+							location.reload()
+						},3000)
+					}
+				}
+			}
+		}
+	</script>
+</html>
