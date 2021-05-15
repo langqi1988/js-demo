@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+	</head>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		li {
+			list-style: none;
+		}
+
+		#box {
+			margin: 0 auto;
+			width: 700px;
+
+		}
+
+		ul {
+			width: 200px;
+			float: left;
+			margin: 0 auto;
+			margin-right: 10px;
+		}
+
+		img {
+			width: 200px;
+			padding-top: 10px;
+		}
+	</style>
+	<body>
+		<div id="box">
+			<ul></ul>
+			<ul></ul>
+			<ul></ul>
+		</div>
+
+	</body>
+	<script type="text/javascript">
+		//创建一个函数 获取图片资源
+		function ajax(url, fn) {
+			//兼容IE6
+			var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+			//get方法 打开url true代表异步
+			xhr.open("GET", url, true);
+			//发送请求
+			xhr.send();
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+				//若成功 将返回数据传给fn函数并执行
+				fn && fn(xhr.responseText);
+				}
+
+			}
+		}
+		//获取外层容器
+		var oBox = document.getElementById("box");
+		//获取3列ul 
+		var oUl = document.getElementsByTagName("ul");
+		//获取当前浏览器的高度
+		var vH= document.documentElement.clientHeight;
+		//算出3个UL中哪个ul高度最小（就在哪个里面插入图片）
+		function min_height (oUl) {
+			//现将第一个ul高度保存 为基准
+			var ht = oUl[0].offsetHeight;
+			//用来记录ul的序号
+			var index = 0;
+			//循环3个ul
+			for(var i=0;i<oUl.length;i++){
+				//如果当前ul的可见高度比ht小 
+				if (oUl[i].offsetHeight<ht) {
+					//那么更新ht的数据 让ht保存最小高度
+					ht = oUl[i].offsetHeight;
+					//然后将当前UL的序号（第几个）记录下来
+					index = i
+				}
+			}
+			//将ul序号返回
+			return index;
+		}
+		//执行函数
+		loadImg();
+		//次函数用于加载图片
+		function loadImg () {
+			//获取图片
+			//此json中的数据是图片地址的列表
+			ajax("lxb/lxb.json",function (data) {
+				//此方法可以将json字符串转为数组
+				// data = (new Function("return"+data))();
+				//此方法也可以将json字符串转为数组
+				data = JSON.parse(data)
+				//遍历数组中的元素【图片地址】
+				for (var i=0;i<data.length;i++) {
+					//创建li  img
+					var oLi = document.createElement("li");
+					var oImg=document.createElement("img");
+					//将图片地址添加到img的src属性中
+					oImg.src = data[i];
+					//img插入li
+					oLi.appendChild(oImg);
+					//调用函数 取到高度最小的ul的序号
+					let index= min_height(oUl);
+					//将li插入指定ul
+					oUl[index].appendChild(oLi);
+					
+				}
+			})
+		}
+		//为页面绑定滚轮时间 用于动态加载图片
+		document.onscroll = function  () {
+			//获取滚动条滚动了多少距离（向下）（像素）
+			//兼容火狐
+			var sH=document.documentElement.scrollTop || document.body.scrollTop;
+			//浏览器“可见高度”（不包括滚轮左右上下滚动后出现的内容）
+			//console.log(document.documentElement.clientHeight)
+			
+			//浏览器实际高度（总高度，包括滚轮下滑后出现的内容）
+			//console.log(document.body.scrollHeight);
+			
+			//sH是向下滚动了多少 
+			//vH是可见页面高度
+			//当sH（滚动条）滑到底部
+			//那么sH + vH = document.body.scrollHeight
+			//下面公式*0.8表示 当滚轮下滑到大约总页面的80%时
+			//那么，执行loadImg函数 异步加载图片
+			if (sH+vH>=document.body.scrollHeight*0.8) {
+				loadImg();
+			}
+		}
+	</script>
+</html>
