@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			#box {
+				width: 100%;
+				height: 8000px;
+			}
+
+			a {
+				position: fixed;
+				right: 10px;
+				bottom: 10px;
+				background: red;
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box"></div>
+		<a href="javascript:;">回到顶部</a>
+	</body>
+	<script type="text/javascript">
+		window.onload = function() {
+			//准备工作
+			//获取A链接 定时器 速度 标记开关
+			var oA = document.getElementsByTagName("a")[0];
+			var timer = null;
+			var speed = 0;
+			var flag = true;
+			//页面滚动事件
+			window.onscroll = function() {
+				//每当滚轮滚动获取当前滚动距离 已兼容
+				var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
+				//滚动距离大于600 显示回到顶部链接 否则隐藏
+				if (scrolltop >= 600) {
+					oA.style.display = "block";
+				} else {
+					oA.style.display = "none";
+				}
+				//**************************
+				//flag标记 用于在回到顶部过程中 滑动滚轮后 取消回到顶部动作
+				//回到顶部定时器过程：
+				//1.执行定时器 滚动条上移 flag=true
+				//2.执行window.onscroll事件 先判断 !flag 为假 不停止定时器 然后flag=false
+				//重复执行1 2 知道滚动条到达顶部
+				//若通过回到顶部定时器函数让滚动条回到顶部 那么!flag永远是false 
+				//但是定时器每隔xxx毫秒才执行一次
+				//如果在下一次定时器触发之前 我们手动触发滚动事件(window.onscroll)至少两次
+				//那么会在第一次滚动事件后将flag值变为false
+				//第二次滚动事件执行到if(!flag){clearInterval(timer);}时，会触发定时器停止函数
+				//因为下一次定时器没有执行flag值没有被改回true
+				//**************************
+				if(!flag){
+					clearInterval(timer);
+				}
+				flag = false;
+				
+			};
+			//回到顶部点击事件
+			oA.onclick = function() {
+				//定时器 为了动画效果
+				timer = setInterval(function() {
+					//每次执行定时器 获取当前滚动条移动距离
+					//已兼容
+					var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
+					//滚动速度 逐渐减小 因为每次执行定时器当前滚动条距离都比上一次小
+					speed = scrolltop / 5;
+					//将当前滚动条距离设置为当前滚动条距离-速度 
+					//已兼容
+					document.documentElement.scrollTop = document.body.scrollTop = scrolltop - speed;
+					//到达顶部 取消定时器
+					if (scrolltop == 0) {
+						clearInterval(timer);
+					}
+					flag = true;
+				}, 20)
+
+			};
+			//回到顶部过程中 滑动滚轮 停止回到顶部
+			// window.onmousewheel = function(){
+			// 	clearInterval(timer);
+			// }
+		}
+	</script>
+</html>
