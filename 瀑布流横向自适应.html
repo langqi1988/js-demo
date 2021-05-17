@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+	</head>
+	<style>
+		div.wrap {
+			position: relative;
+		}
+
+		div.wrap div {
+			width: 200px;
+			padding: 4px;
+			border: 1px solid #000000;
+			float: left;
+			position: absolute;
+		}
+
+		div.wrap h3 {
+			line-height: 35px;
+		}
+
+		div.wrap div img {
+			width: 200px;
+		}
+	</style>
+	<body>
+		<div class="wrap" id="wrap">
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+			<div>
+				<h3>瀑布流</h3>
+				<a href="javascript:;">
+					<img src="lxb/ET8A1051.JPG">
+				</a>
+				<p>瀑布流</p>
+				<span>瀑布流</span>
+			</div>
+	</body>
+	<script type="text/javascript">
+		//开局加载瀑布流函数
+		window.onload = function() {
+			waterFall("wrap");
+		}
+		//窗口发生变化加载瀑布流函数
+		window.onresize = function() {
+			waterFall("wrap");
+		}
+		//定义瀑布流函数
+		//传入父元素 图片上下间距 子元素
+		function waterFall(element, space, children) {
+			//如果没传父元素 不执行
+			if (!element) {
+				return;
+			}
+			//设置图片间距 和子元素的默认值
+			space = space || 10;
+			children = children || "div";
+			//获取父元素
+			var wrap = document.getElementById(element);
+			//获取所有子元素
+			var water = wrap.getElementsByTagName(children);
+			//获取一张图片的宽度
+			var spaceWidth = water[0].offsetWidth;
+			//获取父元素的宽度
+			var wrapWidth = wrap.offsetWidth;
+			//算出当前窗口能放下几张图片 横向 floor 向下取整
+			var colNum = Math.floor(wrapWidth / spaceWidth);
+			//获取图片与图片的距离
+			//第一张左边 最后一张右边都有
+			//(wrapWidth - colNum * spaceWidth)放入图片后还剩多少空间
+			//(colNum + 1)将剩余空间分成多少分 一张图片两份 两张三分 三张四份 所以是colnum+1
+			var padding = Math.floor((wrapWidth - colNum * spaceWidth) / (colNum + 1));
+			//创建数组 存入对象 对象中保存每一列的top left
+			var column = new Array();
+			//保存所有列中最高的列的高度 用来设置父元素高度，防止塌陷
+			var maxHeight = 0;
+			//为每一列保存 top left
+			for (var i = 0; i < colNum; i++) {
+				column[i] = new Object();
+				column[i].top = space;
+				//保存每一列的left值
+				column[i].left = (spaceWidth * i) + padding * (i + 1);
+			}
+			//循环所有子元素
+			for (var i = 0; i < water.length; i++) {
+				//判断当前子元素是第几列
+				//i+1 整除column 说明是第colNmn
+				if ((i + 1) % colNum == 0) {
+					sub = colNum;
+				//例如i=0 %总列数colNum 余几就是第几列
+				} else {
+					sub = (i + 1) % colNum;
+				}
+				//算出当前遍历water[i]是第几列后
+				//添加绝对定位
+				water[i].style.position = "absolute";
+				//将当前图片top值设为 当前列的top值（相当于高度）
+				water[i].style.top = column[sub - 1].top + "px";
+				//设置left值
+				water[i].style.left = column[sub - 1].left + "px";
+				//重新计算当前图片所在列的高度
+				//原高度 + 当前图片高度 + 图片间隔 
+				//sub-1 因为sub是当前图片在第几列 column数组下标从0开始 所以-1
+				column[sub - 1].top += water[i].offsetHeight + space;
+			}
+			//判断那一列最高 
+			for (var i = 0; i < colNum; i++) {
+				if (column[i].top > maxHeight) {
+					maxHeight = column[i].top;
+				}
+			}
+			//将父元素的高度设为最高的数值
+			wrap.style.height = maxHeight + "px";
+
+		}
+	</script>
+</html>
